@@ -1,4 +1,6 @@
-SOURCE=\
+CPPFLAGS = -I ../libs
+
+SOURCE= ./main.cpp \
 	../libs/tv/a.c \
 	../libs/tv/b.cpp \
 

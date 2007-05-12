@@ -1,8 +1,8 @@
 #include "a.h"
 #include <stdio.h>
 
-void do_tv_a()
+do_tw_a()
 {
-	printf("01  \\\n");
+	printf("02    \\\n");
 }
 
