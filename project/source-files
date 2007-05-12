@@ -1,0 +1,4 @@
+SOURCE=\
+	../libs/tv/a.c \
+	../libs/tv/b.cpp \
+
