@@ -1,0 +1,9 @@
+There are two ways to handle configuring each configuration:
+
+- Use target-specific variables and a unique target for each configuation.
+  (Surprisingly, CFLAGS += -DABC; config: CFLAGS += -DDEF works perfectly)
+- Use variables (CFLAGS_debug) and a common set of targets.
+
+I chose to use the latter because build commands are hard to write.
+I can imagine that maintainability gets even worse if I'm trying to
+dupe them for each target.

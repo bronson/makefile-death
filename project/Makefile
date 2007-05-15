@@ -5,34 +5,51 @@
 # This file demonstrates how to incrementally build files from anywhere
 # on your filesystem in a single object directory with full dependencies.
 
+# To use a different object directory:
+#     make OBJDIR=/tmp/obj
+
 # By default we have only a single configuration: the empty one.
 # You can add more configurations in your build.mak file.
-CONFIGS =
+CONFIGS = release debug
 CUSTOMFILE = build.mk
+
+
+# default flag settings (feel free to override in your build.mk file):
+CFLAGS_release += -O2 -Wall
+CXXFLAGS_release += -O2 -Wall
+CFLAGS_debug += -O0 -g -Wall -Werror
+CXXFLAGS_debug += -O0 -g -Wall -Werror
+
 
 # By default objects go into objCONF in current dir.
 # Pass a different OBJDIR to place them somewhere else.
-OBJDIR = obj
+OBJNAME = obj
 PROGNAME = program
 
 
 # This file needs to define a single variable, SOURCE, that
 # tells the location of each file that we will compile.  The
 # files can be from anywhere in the filesystem.
-include build.mk
-CONFIGS += headless
+include $(CUSTOMFILE)
+
+CONFIG ?= $(firstword $(CONFIGS))
 
 
-# If user specified a configuration, update all vars to use it
+# 'make' with no args is equivalent to 'make release'
+ifeq ($(CONFIG), $(firstword $(CONFIGS)))
 EXECUTABLE := $(PROGNAME)
-ifeq ($(origin CONFIG), undefined)
-CLEAN := $(EXECUTABLE) $(OBJDIR)
-CLEAN += $(addprefix $(PROGNAME)-, $(CONFIGS)) $(addprefix obj-, $(CONFIGS))
+OBJDIR := $(OBJNAME)
+CLEANFILES += $(EXECUTABLE) $(OBJDIR) $(addprefix $(PROGNAME)-, $(CONFIGS)) $(addprefix obj-, $(CONFIGS))
 else
 EXECUTABLE := $(PROGNAME)-$(CONFIG)
-OBJDIR := $(OBJDIR)-$(CONFIG)
-CLEAN := $(EXECUTABLE) $(OBJDIR)
+OBJDIR := $(OBJNAME)-$(CONFIG)
+CLEANFILES := $(EXECUTABLE) $(OBJDIR)
 endif
+
+
+# Copy the config-specific settings into the global vars
+DEFVARS += ARFLAGS ASFLAGS CFLAGS CXXFLAGS COFLAGS CPPFLAGS FFLAGS GFLAGS LDFLAGS LFLAGS YFLAGS PFLAGS RFLAGS LINTFLAGS
+$(foreach V,$(DEFVARS),$(eval $(V) += $$($(V)_$(CONFIG))))
 
 
 # done with configuration, time for action
@@ -48,31 +65,46 @@ $(foreach V,$(SOURCE),$(eval file_$(notdir $(V)) = $(V)))
 all: $(EXECUTABLE)
 .PHONY: all
 
-$(OBJDIR):
-	mkdir -p $@
+-include $(DEPFILES)
+
+# Using directories as build targets is not reliable.  Targets tend to
+# get built far more often than they should.  Therefore, we'll use a random
+# file to get make to tell us when the directory needs to be recreated.
+$(OBJDIR)/build-tag:
+	mkdir -p $(OBJDIR)
+	touch $@
 
 $(EXECUTABLE): $(OBJDIR)/$(EXECUTABLE)
 	cp $< $@
 
--include $(DEPFILES)
-
 .PHONY: clean
 clean:
-	rm -rf $(CLEAN)
+	rm -rf $(CLEANFILES)
 
-.PHONY: headless
-headless:
-	@$(MAKE) --no-print-directory CONFIG=headless
 
-.PHONY: headless-clean
-headless-clean:
-	@$(MAKE) --no-print-directory CONFIG=headless clean
+
+# Add targets for each configuration.  Right now we support
+# 'make target' and 'make target-clean' (where target is a name of
+# one of your configurations.
+
+define ADD_TARGET
+.PHONY: $(1)
+$(1):
+	@$$(MAKE) --no-print-directory CONFIG=$(1)
+
+.PHONY: $(1)-clean
+$(1)-clean:
+	@$$(MAKE) --no-print-directory CONFIG=$(1) clean
+endef
+
+$(foreach conf,$(CONFIGS),$(eval $(call ADD_TARGET,$(conf))))
+
 
 
 # ---- tool targets:
 
 # Every build target needs to depend on these
-COMMONDEPS=$(OBJDIR) $(CUSTOMFILE) Makefile
+COMMONDEPS=$(CUSTOMFILE) $(OBJDIR)/build-tag Makefile
 
 # C++ compiler
 $(OBJDIR)/%.cpp.o: $(COMMONDEPS)
