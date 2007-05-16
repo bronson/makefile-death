@@ -19,6 +19,9 @@ CFLAGS_release += -O2 -Wall
 CXXFLAGS_release += -O2 -Wall
 CFLAGS_debug += -O0 -g -Wall -Werror
 CXXFLAGS_debug += -O0 -g -Wall -Werror
+# I recommend adding the following line to your build.mk
+# if you're using Subversion.
+# CPPFLAGS += -DVERSION=r$(shell svnversion .)
 
 
 # By default objects go into objCONF in current dir.
@@ -48,8 +51,8 @@ endif
 
 
 # Copy the config-specific settings into the global vars
-DEFVARS += ARFLAGS ASFLAGS CFLAGS CXXFLAGS COFLAGS CPPFLAGS FFLAGS GFLAGS LDFLAGS LFLAGS YFLAGS PFLAGS RFLAGS LINTFLAGS
-$(foreach V,$(DEFVARS),$(eval $(V) += $$($(V)_$(CONFIG))))
+COPYVARS += SOURCE LDLIBS ARFLAGS ASFLAGS CFLAGS CXXFLAGS COFLAGS CPPFLAGS FFLAGS GFLAGS LDFLAGS LFLAGS YFLAGS PFLAGS RFLAGS LINTFLAGS
+$(foreach V,$(COPYVARS),$(eval $(V) += $$($(V)_$(CONFIG))))
 
 
 # done with configuration, time for action
@@ -103,8 +106,10 @@ $(foreach conf,$(CONFIGS),$(eval $(call ADD_TARGET,$(conf))))
 
 # ---- tool targets:
 
-# Every build target needs to depend on these
-COMMONDEPS=$(CUSTOMFILE) $(OBJDIR)/build-tag Makefile
+# Dependencies for every build target
+COMMONDEPS=$(OBJDIR)/build-tag
+# Comment the following line if you *don't* want Makefile to force a rebuild.
+COMMONDEPS+=$(CUSTOMFILE) Makefile
 
 # C++ compiler
 $(OBJDIR)/%.cpp.o: $(COMMONDEPS)
@@ -115,8 +120,8 @@ $(OBJDIR)/%.c.o: $(COMMONDEPS)
 	$(CC) -c -MD -MP $(CPPFLAGS) $(CFLAGS) $(file_$(basename $(notdir $@))) -o $@
 
 # Linker
-# Need to use CXX to link instead of CC because of link errors on the Mac.
+# Always use CXX because CC can't do C linkage.
 # Pass CXX flags so linker knows the status of -O.
 $(OBJDIR)/$(EXECUTABLE): $(COMMONDEPS) $(OBJFILES)
-	$(CXX) $(CXXFLAGS) $(OBJFILES) $(LIBS) -o $@
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $(OBJFILES) -o $@
 
