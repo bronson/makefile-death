@@ -2,11 +2,21 @@
 # Scott Bronson
 # 22 Apr 2007
 #
+# TODO: swap the sense.  i.e. build.mk should be the Makefile, and then
+# at the end it should include build.mk to implement the mechanism.
+# TODO: need a lot of tmtest tests.
+#
 # This file demonstrates how to incrementally build files from anywhere
 # on your filesystem in a single object directory with full dependencies.
-
+#
 # To use a different object directory:
 #     make OBJDIR=/tmp/obj
+#
+# To ignore the makefile when calculating dependencies (if, for example,
+# you're tweaking the build and there's no need to regenerate the objects
+# each time)
+#     make IGNORE_MAKEFILE=1
+
 
 # By default we have only a single configuration: the empty one.
 # You can add more configurations in your build.mak file.
@@ -17,11 +27,10 @@ CUSTOMFILE = build.mk
 # default flag settings (feel free to override in your build.mk file):
 CFLAGS_release += -O2 -Wall
 CXXFLAGS_release += -O2 -Wall
-CFLAGS_debug += -O0 -g -Wall -Werror
-CXXFLAGS_debug += -O0 -g -Wall -Werror
-# I recommend adding the following line to your build.mk
-# if you're using Subversion.
-# CPPFLAGS += -DVERSION=r$(shell svnversion .)
+CFLAGS_debug += -O0 -g -Wall
+CXXFLAGS_debug += -O0 -g -Wall
+# compile the subversion revision into the executable
+CPPFLAGS += -DVERSION=r$(shell svnversion .)
 
 
 # By default objects go into objCONF in current dir.
@@ -106,10 +115,11 @@ $(foreach conf,$(CONFIGS),$(eval $(call ADD_TARGET,$(conf))))
 
 # ---- tool targets:
 
-# Dependencies for every build target
+# Every build target needs to depend on these
 COMMONDEPS=$(OBJDIR)/build-tag
-# Comment the following line if you *don't* want Makefile to force a rebuild.
+ifeq ($(IGNORE_MAKEFILE),)
 COMMONDEPS+=$(CUSTOMFILE) Makefile
+endif
 
 # C++ compiler
 $(OBJDIR)/%.cpp.o: $(COMMONDEPS)
@@ -123,5 +133,5 @@ $(OBJDIR)/%.c.o: $(COMMONDEPS)
 # Always use CXX because CC can't do C linkage.
 # Pass CXX flags so linker knows the status of -O.
 $(OBJDIR)/$(EXECUTABLE): $(COMMONDEPS) $(OBJFILES)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $(OBJFILES) -o $@
+	$(CXX) $(CXXFLAGS) $(OBJFILES) $(LDLIBS) -o $@
 
