@@ -1,0 +1,6 @@
+- Add tmtest tests
+- Prettify the displayed output.
+- Make sure we works with spaces in base paths or file paths.
+- What about filename collisions?
+- Add targets for lex, yacc, re2c, etc.
+- Is there any way to disable builtin rules from the makefile itself?

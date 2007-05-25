@@ -118,5 +118,5 @@ $(OBJDIR)/%.c.o: $(COMMONDEPS)
 # Always use CXX because CC can't do C linkage.
 # Pass CXX flags so linker knows the status of -O.
 $(OBJDIR)/$(EXECUTABLE): $(COMMONDEPS) $(OBJFILES)
-	$(CXX) $(CXXFLAGS) $(OBJFILES) $(LDLIBS) -o $@
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJFILES) $(LDLIBS) -o $@
 

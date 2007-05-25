@@ -11,8 +11,11 @@ OBJNAME = obj
 CONFIGS += release debug
 
 # Settings for each configuration
+CPPFLAGS_release += -DNDEBUG
 CFLAGS_release += -O2 -Wall
 CXXFLAGS_release += -O2 -Wall
+
+CPPFLAGS_debug += -DDEBUG -D_DEBUG
 CFLAGS_debug += -O0 -g -Wall
 CXXFLAGS_debug += -O0 -g -Wall
 
