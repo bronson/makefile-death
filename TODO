@@ -1,6 +1,8 @@
+- Make 'make debug' work (instead of current 'make CONFIG=debug').
 - Add tmtest tests
 - Prettify the displayed output.
 - Make sure we works with spaces in base paths or file paths.
+- put scripts dir in a submodule so you can easily add just them?
 - What about filename collisions?
-- Add targets for lex, yacc, re2c, etc.
+- Add targets or docs for lex, yacc, re2c, etc.
 - Is there any way to disable builtin rules from the makefile itself?

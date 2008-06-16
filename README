@@ -1,0 +1,16 @@
+
+Advantages
+- Full dependency handling, no phantom rebuilds.
+- Can keep different configurations simultaneously: debug, test, release, etc.
+- Can build source on a read-only medium: OBJDIR=/tmp/obj
+
+
+Thoughts
+
+Q: Why create custom variables (CFLAGS_debug += -DABC) when gmake provides
+target-specific variables (debug: CFLAGS += -DABC) that should do the same
+thing?
+
+A: Because sometimes you need to access a configuration's variables
+outside of its context.  gmake doesn't offer any way to do this.
+

@@ -20,5 +20,7 @@ CFLAGS_debug += -O0 -g -Wall
 CXXFLAGS_debug += -O0 -g -Wall
 
 # And we always want the version number added
-CPPFLAGS += -DVERSION=r$(shell svnversion .)
+# CPPFLAGS += -DVERSION=r$(shell svnversion .)
 
+# Macs appear to require this
+# LDFLAGS += -L/opt/local/lib
