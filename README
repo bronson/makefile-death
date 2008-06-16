@@ -1,8 +1,15 @@
-
 Advantages
+
 - Full dependency handling, no phantom rebuilds.
 - Can keep different configurations simultaneously: debug, test, release, etc.
 - Can build source on a read-only medium: OBJDIR=/tmp/obj
+
+
+How To Use
+
+- Copy project/scripts directory to your application.
+- Create your application's Makefile based on project/Makefile.
+- Run 'make' or 'make CONFIG=debug'.  Everything should just work.
 
 
 Thoughts

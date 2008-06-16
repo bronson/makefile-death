@@ -1,8 +1,11 @@
 - Make 'make debug' work (instead of current 'make CONFIG=debug').
-- Add tmtest tests
+- Add tmtest tests.  Move the obscure crap out to the tmtests.
+  Make the Makefile shipped with the project simple and work in-place.
 - Prettify the displayed output.
 - Make sure we works with spaces in base paths or file paths.
+- Can I clean up submodules?  Calculating BASE is pretty hackish.
 - put scripts dir in a submodule so you can easily add just them?
+- Write a converter for Visual Studio projects?
 - What about filename collisions?
-- Add targets or docs for lex, yacc, re2c, etc.
+- Add targets or docs for lex, yacc, re2c, etc?
 - Is there any way to disable builtin rules from the makefile itself?
