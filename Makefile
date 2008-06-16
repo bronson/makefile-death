@@ -1,6 +1,9 @@
 # It's usually easiest to override sensible defaults (optional)
 include scripts/defaults.mk
 
+# The final executable will be called 'example'.
+PROGNAME = example
+
 # You get 'release' and 'debug' configurations by default.
 # Release is built by default.  To build the debug configuration:
 #     make CONFIG=debug
